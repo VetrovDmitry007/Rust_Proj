@@ -14,8 +14,10 @@ struct ResponseParser {
     status: String,
     headers: HeaderMap,
     body: String,
+    fl_partial_body: bool,
     fl_msg_complete: bool,
     buffer: Vec<u8>,
+    inp_data: Vec<u8>,
 }
 
 #[derive(FromPyObject)]
@@ -32,15 +34,19 @@ impl ResponseParser {
            status: "400".to_string(),
            headers: HeaderMap::new(),
            body: "".to_string(),
+           fl_partial_body: false,
            fl_msg_complete: false,
            buffer: vec![0u8; 0],
+           inp_data: vec![0u8; 0],
         }
     }
 
     pub fn execute(&mut self, a_resp: &[u8], eof_mark: &[u8])-> PyResult<()> {
+        self.upd_partial_body(a_resp);
+        self.set_recv_body(a_resp);
         self.buffer.extend(a_resp.to_vec().iter().cloned());
         let b_resp: &[u8] = &self.buffer.clone();
-        //let с_resp: &[u8] = &self.buffer.clone();
+
         //Проверка конца пакета на наличие eof_mark
         if !eof_mark.is_empty(){
             // Параметр eof_mark задан, eof_mark в конце пакета
@@ -117,12 +123,46 @@ impl ResponseParser {
         return res_dict.into();
     }
 
-    pub fn recv_body(&mut self)-> PyResult<&[u8]>{
+    pub fn get_full_body(&mut self)-> PyResult<&[u8]>{
         Ok(self.body.as_bytes())
     }
 
+    pub fn recv_body(&mut self)-> PyResult<&[u8]>{
+        Ok(&self.inp_data)
+    }
+
+    fn set_recv_body(&mut self, input: &[u8]){
+        self.inp_data.clear();
+        if self.fl_partial_body{
+            if input.windows(4).any(|window| window == b"\r\n\r\n"){
+                let s = std::str::from_utf8(&input)
+                .unwrap()
+                .split("\r\n\r\n")
+                .find(|&x| x.contains("html"))
+                .unwrap_or("");
+                println!("s: {}",s);
+                self.inp_data.extend_from_slice(input);
+            } else {
+                self.inp_data.extend_from_slice(input);
+            };
+        }
+    }
+
+    //Являются ли данные частью Body
+    pub fn is_partial_body(&mut self) -> bool {
+        self.fl_partial_body
+    }
+
+    //Завершена ли передача всего сообщения
     pub fn is_message_complete(&mut self) -> bool {
         self.fl_msg_complete
+    }
+
+    //Устанавливает признак -- являются ли данные частью Body
+    fn upd_partial_body(&mut self, input: &[u8]) {
+        if input.windows(4).any(|window| window == b"\r\n\r\n"){
+            self.fl_partial_body = true;
+        }
     }
 
 

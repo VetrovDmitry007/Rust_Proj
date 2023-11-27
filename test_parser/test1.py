@@ -19,9 +19,11 @@ parser = ResponseParser()
 while not parser.is_message_complete():
     response = ls_response.pop(0)
     parser.execute(response, eof_mark)
+    print(f'{parser.is_partial_body()=}')
+    print(parser.recv_body())
 
 print(parser.get_status_code())
 print(parser.get_headers())
-print(parser.recv_body())
+# print(parser.recv_body())
 print(f'{parser.is_message_complete()=}')
 
