@@ -1,0 +1,20 @@
+[package]
+name = "test_parser"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "test_parser"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = "0.19.0"
+serde_json = "1.0"
+serde = {version="1.0.99", features=["derive"]}
+http-bytes = { git = "https://github.com/vi/http-bytes" }
+httparse = "^1.8.0"
+
+
+[dependencies.http]
+http = "0.2"
