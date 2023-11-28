@@ -16,6 +16,7 @@ struct ResponseParser {
     body: String,
     fl_partial_body: bool,
     fl_msg_complete: bool,
+    fl_headers_complete: bool,
     buffer: Vec<u8>,
     inp_data: Vec<u8>,
 }
@@ -36,6 +37,7 @@ impl ResponseParser {
            body: "".to_string(),
            fl_partial_body: false,
            fl_msg_complete: false,
+           fl_headers_complete: false,
            buffer: vec![0u8; 0],
            inp_data: vec![0u8; 0],
         }
@@ -155,10 +157,15 @@ impl ResponseParser {
         self.fl_msg_complete
     }
 
-    //Устанавливает признак -- являются ли данные частью Body
+    pub fn is_headers_complete(&mut self) -> bool {
+        self.fl_headers_complete
+    }
+
+    //Устанавливает признак -- являются ли данные частью Body, заголовок завершён
     fn upd_partial_body(&mut self, input: &[u8]) {
         if input.windows(4).any(|window| window == b"\r\n\r\n"){
             self.fl_partial_body = true;
+            self.fl_headers_complete = true;
         }
     }
 

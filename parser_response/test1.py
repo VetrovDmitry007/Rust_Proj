@@ -23,6 +23,7 @@ while not parser.is_message_complete():
     parser.execute(response, eof_mark)
     # print(f'{parser.is_partial_body()=}')
     # print(parser.recv_body())
+    print(f"{parser.is_headers_complete()=}")
     rec = parser.recv_body()
     if len(rec) > 0:
         response_body += [rec]
