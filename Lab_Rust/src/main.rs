@@ -38,11 +38,16 @@ fn main() {
     //println!("Headers: {}", str_headers);
     //println!("Body: {}", str::from_utf8(&b).unwrap());
 
-    let s: &[u8]=  b"HTTP/1.1 200 OK\r\nHost: example.com\r\nContent-Type: text/plain\r\nContent-Length: 13\r\n\r\nHello, world\n";
-    let n: i32 = content_len(s);
+    //let s: &[u8]=  b"HTTP/1.1 200 OK\r\nHost: example.com\r\nContent-Type: text/plain\r\nContent-Length: 13\r\n\r\nHello, world\n";
+    let s: &[u8] = b"f15b1a51d1c557942c39\r\n\r\n<html>\r\n<head><title>301 Moved Permanently</title></head>\r\n";
+
+    //let n: i32 = content_len(s);
     //println!("cont_len = {}", n);
     let cn_b: i32 = get_body_len(s);
     println!("body_len = {}", cn_b);
+    
+    
+    copy_b(s);
 
 }
 
@@ -76,3 +81,12 @@ fn content_len(s:&[u8]) -> i32{
     }
     return 0;
 }
+
+fn copy_b(input:&[u8]){
+    let index = input.windows(4).position(|window| window == b"\r\n\r\n");
+    let result = &input[index.unwrap()..];
+    let content_length = std::str::from_utf8(&result).unwrap();
+    println!("{}", content_length)
+
+}
+

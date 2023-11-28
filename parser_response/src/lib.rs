@@ -135,13 +135,10 @@ impl ResponseParser {
         self.inp_data.clear();
         if self.fl_partial_body{
             if input.windows(4).any(|window| window == b"\r\n\r\n"){
-                let s = std::str::from_utf8(&input)
-                .unwrap()
-                .split("\r\n\r\n")
-                .find(|&x| x.contains("html"))
-                .unwrap_or("");
-                println!("s: {}",s);
-                self.inp_data.extend_from_slice(input);
+                let index = input.windows(4).position(|window| window == b"\r\n\r\n");
+                let index_plus_4 = index.expect("REASON").saturating_add(4);
+                let result = &input[index_plus_4..];
+                self.inp_data.extend_from_slice(result);
             } else {
                 self.inp_data.extend_from_slice(input);
             };
@@ -169,7 +166,7 @@ impl ResponseParser {
 }
 
 #[pymodule]
-fn test_parser(_py: Python, m: &PyModule) -> PyResult<()> {
+fn parser_response(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<ResponseParser>()?;
     Ok(())
 }

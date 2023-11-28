@@ -1,0 +1,23 @@
+[package]
+name = "parser_response"
+authors = ["Vetrov Dmitry <13im@mail.ru>"]
+license = "MIT/Apache-2.0"
+description = "A tiny, safe, speedy, zero-copy HTTP/1.x parser."
+keywords = ["http", "parser", "rust", "response"]
+categories = ["network-programming", "no-std", "parser-implementations", "web-programming"]
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "parser_response"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = "0.19.0"
+http-bytes = { git = "https://github.com/vi/http-bytes" }
+httparse = "^1.8.0"
+
+
+[dependencies.http]
+http = "0.2"
