@@ -11,7 +11,7 @@ use pyo3::Python;
 #[pyclass]
 #[derive(Clone, Debug)]
 struct ResponseParser {
-    status: String,
+    status: i32,
     headers: HeaderMap,
     body: String,
     fl_partial_body: bool,
@@ -32,7 +32,7 @@ impl ResponseParser {
     #[new]
     fn py_new() -> Self {
         ResponseParser {
-           status: "400".to_string(),
+           status: 400,
            headers: HeaderMap::new(),
            body: "".to_string(),
            fl_partial_body: false,
@@ -81,7 +81,7 @@ impl ResponseParser {
         let s = r.status().to_string();
         let parts: Vec<&str> = s.split_whitespace().collect();
         let n: i32 = parts[0].parse().unwrap();
-        self.status = n.to_string();
+        self.status = n;
         self.headers = (*r.headers()).clone().into();
         self.body = str::from_utf8(&b).unwrap().into();
         self.fl_msg_complete = true;
@@ -113,8 +113,8 @@ impl ResponseParser {
         return 0;
     }
 
-    pub fn get_status_code(&mut self)-> PyResult<String>{
-        Ok(self.status.to_string())
+    pub fn get_status_code(&mut self)-> PyResult<i32>{
+        Ok(self.status)
     }
 
     pub fn get_headers(&mut self, py: Python<'_>)-> Py<PyDict>{

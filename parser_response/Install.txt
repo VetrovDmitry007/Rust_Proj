@@ -1,0 +1,53 @@
+1. Копирование файла
+scp /home/pytonist/PycharmProjects/Rust_Proj/parser_response/target/wheels/parser_response-0.2.0-cp38-cp38-manylinux_2_34_x86_64.whl 13im@192.168.133.223:/home/13im
+
+scp 13im@192.168.133.223:/opt/noc/core/http/client.py  /home/pytonist/PycharmProjects/Rust_Proj/parser_response/client_http/client.py
+
+# C Локальной --> на Сервер
+scp /home/pytonist/PycharmProjects/Rust_Proj/parser_response/client_http/new_client.py 13im@192.168.133.223:/home/13im/new_file/client.py
+scp /home/pytonist/PycharmProjects/Rust_Proj/parser_response/client_http/etl_debag_client.py 13im@192.168.133.223:/home/13im/new_file/client.py
+
+
+
+scp 13im@192.168.133.223:/opt/noc/lib/python3.9/site-packages/consul/base.py /home/pytonist/PycharmProjects/Rust_Proj/parser_response/client_http/base.py
+
+2. Установка
+/opt/noc/bin/pip3 install /home/pytonist/PycharmProjects/Rust_Proj/parser_response/target/wheels/parser_response-0.2.0-cp38-cp38-manylinux_2_34_x86_64.whl
+/opt/noc/bin/pip3.9 install /home/pytonist/PycharmProjects/Rust_Proj/parser_response/target/wheels/parser_response-0.2.0-cp38-cp38-manylinux_2_34_x86_64.whl
+
+/opt/noc/bin/pip3.9 install /home/13im/Rust_Proj/parser_response/target/wheels/parser_response-0.2.0-cp39-cp39-manylinux_2_28_x86_64.whl
+
+3. Версия платформы
+/opt/noc/bin/python3 --version
+/opt/noc/bin/pip3 --version
+
+4. Разрядность ОС Ubuntu
+uname -m
+
+5. Определение разрядности Python
+import platform
+print(platform.architecture())
+
+
+/opt/noc/bin/python3.9 -m venv --system-site-packages rust_myenv
+cd rust_myenv
+source ./bin/activate
+
+
+6. Тип командной оболочки
+nano /etc/passwd
+
+7. Установка пакетов
+pip3 install pyo3-pack
+pip3 install maturin
+
+8. !!! Установка зависимостей Rust
+curl https://sh.rustup.rs -sSf | sh
+
+9. Компилирование пакета
+maturin develop
+или
+maturin build --release
+
+./noc discovery --debug run box edge-switch
+
