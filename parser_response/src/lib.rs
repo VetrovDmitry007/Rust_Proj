@@ -3,6 +3,8 @@ use http_bytes;
 use http_bytes::http::HeaderMap;
 use std::str;
 use httparse::Header;
+// use hyper::header::HeaderName;
+
 use pyo3::types::{PyByteArray, PyBytes, PyDict};
 use pyo3::Python;
 
@@ -117,13 +119,53 @@ impl ResponseParser {
         Ok(self.status)
     }
 
+    // consul -> Consul
+    fn titlecase(&mut self, header: &str) -> String {
+        let mut result = String::new();
+        let mut capitalize_next = true;
+
+        for c in header.chars() {
+            if capitalize_next {
+                result.push(c.to_ascii_uppercase());
+                capitalize_next = false;
+            } else {
+                result.push(c);
+            }
+        }
+        return result;
+    }
+
+    // x-consul-index -> X-Consul-Index
+    fn convert_to_header_case(&mut self, header: &str) -> String {
+        let parts: Vec<&str> = header.split("-").collect();
+        let mut out_parts: Vec<String> = vec![];
+
+        for part in parts.iter() {
+            let out_str = self.titlecase(&part);
+            out_parts.push(out_str);
+        }
+
+        let joined_string = out_parts.join("-");
+
+        return joined_string;
+    }
+
+
+
     pub fn get_headers(&mut self, py: Python<'_>)-> Py<PyDict>{
         let res_dict: &PyDict = PyDict::new(py);
-        for (key, value) in self.headers.iter() {
-            res_dict.set_item(key.to_string(), value.to_str().unwrap().to_string()).unwrap()
+        let headers_clone = self.headers.clone();
+
+        for (key, value) in headers_clone.iter() {
+            let key_str = key.as_str();
+            let new_key = self.convert_to_header_case(key_str);
+            res_dict.set_item(new_key.as_str(), value.to_str().unwrap().to_string()).unwrap()
         }
         return res_dict.into();
     }
+
+
+
 
     pub fn get_full_body(&mut self)-> PyResult<&[u8]>{
         Ok(self.body.as_bytes())
@@ -132,6 +174,7 @@ impl ResponseParser {
     pub fn recv_body(&mut self)-> PyResult<&[u8]>{
         Ok(&self.inp_data)
     }
+
 
     fn set_recv_body(&mut self, input: &[u8]){
         self.inp_data.clear();
