@@ -3,7 +3,6 @@ use http_bytes;
 use http_bytes::http::HeaderMap;
 use std::str;
 use httparse::Header;
-// use hyper::header::HeaderName;
 
 use pyo3::types::{PyByteArray, PyBytes, PyDict};
 use pyo3::Python;
@@ -65,9 +64,10 @@ impl ResponseParser {
             // Нахождение Lengt body
             let len_d: i32 = self.get_body_len(b_resp);
             if (len_c == len_d) & (len_c > 0){
-                self.parser(b_resp);
+               self.parser(b_resp);
             }
             if (len_c == 0) & (len_d > 0){
+                self.parser(b_resp);
                 self.fl_msg_complete = true;
             }
         }
@@ -151,7 +151,6 @@ impl ResponseParser {
     }
 
 
-
     pub fn get_headers(&mut self, py: Python<'_>)-> Py<PyDict>{
         let res_dict: &PyDict = PyDict::new(py);
         let headers_clone = self.headers.clone();
@@ -165,14 +164,52 @@ impl ResponseParser {
     }
 
 
-
-
     pub fn get_full_body(&mut self)-> PyResult<&[u8]>{
         Ok(self.body.as_bytes())
     }
 
     pub fn recv_body(&mut self)-> PyResult<&[u8]>{
         Ok(&self.inp_data)
+    }
+
+
+    fn clearing_body<'a>(&mut self, input: &'a[u8], sub_data: &'a[u8] )-> &'a [u8]{
+        let len_input = sub_data.len();
+        let opt_index = input.windows(len_input).position(|window| window == sub_data);
+        let index: usize;
+
+        let l:i32 = 999;
+        let i:usize = l as usize;
+
+        match opt_index {
+            Some(x) => index = x,
+            None    => index = i,
+        }
+
+        if index < 999  {
+            let index_plus_n = index.saturating_add(len_input);
+            let result = &input[index_plus_n..];
+            return result;
+        } else {
+            return input;
+        };
+    }
+
+    fn body_trim<'a>(&mut self, input: &'a[u8])-> &'a [u8]{
+        let opt_index = input.windows(7).position(|window| window == b"\r\n0\r\n\r\n");
+        let index: usize;
+
+        match opt_index {
+            Some(x) => index = x,
+            None    => index = 0,
+        }
+
+        if index > 0  {
+            let result = &input[0..index];
+            return result;
+        } else {
+            return input;
+        };
     }
 
 
@@ -183,7 +220,9 @@ impl ResponseParser {
                 let index = input.windows(4).position(|window| window == b"\r\n\r\n");
                 let index_plus_4 = index.expect("REASON").saturating_add(4);
                 let result = &input[index_plus_4..];
-                self.inp_data.extend_from_slice(result);
+                let cl_result = self.clearing_body(result, b"d83\r\n");
+                let result_trim = self.body_trim(cl_result);
+                self.inp_data.extend_from_slice(result_trim);
             } else {
                 self.inp_data.extend_from_slice(input);
             };
