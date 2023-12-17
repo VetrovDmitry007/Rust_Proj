@@ -173,9 +173,8 @@ impl ResponseParser {
     }
 
 
-    fn clearing_body<'a>(&mut self, input: &'a[u8], sub_data: &'a[u8] )-> &'a [u8]{
-        let len_input = sub_data.len();
-        let opt_index = input.windows(len_input).position(|window| window == sub_data);
+    fn clearing_json<'a>(&mut self, input: &'a[u8])-> &'a [u8]{
+        let opt_index = input.windows(4).position(|window| window == b"\r\n[{");
         let index: usize;
 
         let l:i32 = 999;
@@ -187,13 +186,14 @@ impl ResponseParser {
         }
 
         if index < 999  {
-            let index_plus_n = index.saturating_add(len_input);
+            let index_plus_n = index.saturating_add(0);
             let result = &input[index_plus_n..];
             return result;
         } else {
             return input;
         };
     }
+
 
     fn body_trim<'a>(&mut self, input: &'a[u8])-> &'a [u8]{
         let opt_index = input.windows(7).position(|window| window == b"\r\n0\r\n\r\n");
@@ -220,7 +220,7 @@ impl ResponseParser {
                 let index = input.windows(4).position(|window| window == b"\r\n\r\n");
                 let index_plus_4 = index.expect("REASON").saturating_add(4);
                 let result = &input[index_plus_4..];
-                let cl_result = self.clearing_body(result, b"d83\r\n");
+                let cl_result = self.clearing_json(result);
                 let result_trim = self.body_trim(cl_result);
                 self.inp_data.extend_from_slice(result_trim);
             } else {

@@ -13,7 +13,7 @@ scp 13im@192.168.133.223:/opt/noc/lib/python3.9/site-packages/consul/base.py /ho
 
 2. Установка
 /opt/noc/bin/pip3 install /home/pytonist/PycharmProjects/Rust_Proj/parser_response/target/wheels/parser_response-0.2.0-cp38-cp38-manylinux_2_34_x86_64.whl
-/opt/noc/bin/pip3.9 install /home/pytonist/PycharmProjects/Rust_Proj/parser_response/target/wheels/parser_response-0.2.0-cp38-cp38-manylinux_2_34_x86_64.whl
+/opt/noc/bin/pip3.9 install -u /home/pytonist/PycharmProjects/Rust_Proj/parser_response/target/wheels/parser_response-0.2.0-cp38-cp38-manylinux_2_34_x86_64.whl
 
 /opt/noc/bin/pip3.9 install /home/13im/Rust_Proj/parser_response/target/wheels/parser_response-0.2.0-cp39-cp39-manylinux_2_28_x86_64.whl
 

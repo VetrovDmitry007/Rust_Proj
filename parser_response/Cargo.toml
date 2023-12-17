@@ -5,7 +5,7 @@ license = "MIT/Apache-2.0"
 description = "A tiny, safe, speedy, zero-copy HTTP/1.x parser."
 keywords = ["http", "parser", "rust", "response"]
 categories = ["network-programming", "no-std", "parser-implementations", "web-programming"]
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
