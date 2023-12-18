@@ -163,6 +163,19 @@ impl ResponseParser {
         return res_dict.into();
     }
 
+    fn content_type_json(&mut self)-> bool{
+        let headers_clone = self.headers.clone();
+
+        for (key, value) in headers_clone.iter() {
+            let key_str = key.as_str().to_string();
+            let val_str = value.to_str().unwrap().to_string();
+            //println!("Header : {} {}", key_str, val_str);
+            if (key_str ==  "content-type") & (val_str == "application/json"){
+                return true;
+            }
+        }
+        return false;
+    }
 
     pub fn get_full_body(&mut self)-> PyResult<&[u8]>{
         Ok(self.body.as_bytes())
@@ -185,7 +198,7 @@ impl ResponseParser {
             None    => index = i,
         }
 
-        if index < 999  {
+        if self.content_type_json() & (index < 999)  {
             let index_plus_n = index.saturating_add(0);
             let result = &input[index_plus_n..];
             return result;
@@ -220,9 +233,9 @@ impl ResponseParser {
                 let index = input.windows(4).position(|window| window == b"\r\n\r\n");
                 let index_plus_4 = index.expect("REASON").saturating_add(4);
                 let result = &input[index_plus_4..];
-                let cl_result = self.clearing_json(result);
-                let result_trim = self.body_trim(cl_result);
-                self.inp_data.extend_from_slice(result_trim);
+                let mut cl_result = self.clearing_json(result);
+                cl_result = self.body_trim(cl_result);
+                self.inp_data.extend_from_slice(cl_result);
             } else {
                 self.inp_data.extend_from_slice(input);
             };

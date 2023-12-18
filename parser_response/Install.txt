@@ -15,7 +15,7 @@ scp 13im@192.168.133.223:/opt/noc/lib/python3.9/site-packages/consul/base.py /ho
 /opt/noc/bin/pip3 install /home/pytonist/PycharmProjects/Rust_Proj/parser_response/target/wheels/parser_response-0.2.0-cp38-cp38-manylinux_2_34_x86_64.whl
 /opt/noc/bin/pip3.9 install -u /home/pytonist/PycharmProjects/Rust_Proj/parser_response/target/wheels/parser_response-0.2.0-cp38-cp38-manylinux_2_34_x86_64.whl
 
-/opt/noc/bin/pip3.9 install /home/13im/Rust_Proj/parser_response/target/wheels/parser_response-0.2.0-cp39-cp39-manylinux_2_28_x86_64.whl
+/opt/noc/bin/pip3.9 install -U /home/13im/Rust_Proj/parser_response/target/wheels/parser_response-0.6.0-cp39-cp39-manylinux_2_28_x86_64.whl
 
 3. Версия платформы
 /opt/noc/bin/python3 --version
@@ -31,7 +31,7 @@ print(platform.architecture())
 
 /opt/noc/bin/python3.9 -m venv --system-site-packages rust_myenv
 cd rust_myenv
-source ./bin/activate
+source /home/13im/rust_myenv/bin/activate
 
 
 6. Тип командной оболочки
@@ -45,6 +45,7 @@ pip3 install maturin
 curl https://sh.rustup.rs -sSf | sh
 
 9. Компилирование пакета
+cd /home/13im/Rust_Proj/parser_response
 maturin develop
 или
 maturin build --release

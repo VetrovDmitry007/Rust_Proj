@@ -139,12 +139,6 @@ async def fetch(
             opts["ssl"] = ctx
         return opts
 
-    def header_title(st: str):
-        """ x-consul-index -> X-Consul-Index
-        """
-        res = '-'.join([s.title() for s in st.split('-')])
-        return res
-
     metrics["httpclient_requests", ("method", method.lower())] += 1
     #
     if eof_mark:
@@ -285,7 +279,7 @@ async def fetch(
         )
         try:
             # Отладка
-            logger.debug(f"HTTP Request {req=}")
+            # logger.debug(f"HTTP Request {req=}")
             writer.write(req)
             await asyncio.wait_for(writer.drain(), request_timeout)
         except ConnectionResetError:
@@ -327,12 +321,11 @@ async def fetch(
             parser.execute(data, eof_mark)
             if parser.is_partial_body():
                 response_body += [parser.recv_body()]
-        code = int(parser.get_status_code())
+        code = parser.get_status_code()
         parsed_headers = parser.get_headers()
-        parsed_headers = {header_title(key): val for key, val in parsed_headers.items()}
         logger.debug("HTTP Response %s", code)
         # Отладка
-        logger.debug(f"HTTP Response HEADERS: {parsed_headers}")
+        # logger.debug(f"HTTP Response HEADERS: {parsed_headers}")
 
         if 300 <= code <= 399 and follow_redirects:
             # Process redirects
@@ -360,7 +353,7 @@ async def fetch(
         # @todo: Process gzip and deflate Content-Encoding
         parsed_headers = OrderedDict(sorted(parsed_headers.items()))
         # Отладка
-        logger.debug(f"HTTP Response BODY: {b''.join(response_body)}")
+        # logger.debug(f"HTTP Response BODY: {b''.join(response_body)}")
         return code, parsed_headers, b"".join(response_body)
     finally:
         if writer:

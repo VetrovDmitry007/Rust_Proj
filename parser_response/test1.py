@@ -102,7 +102,7 @@ def test_parser():
     response_body: List[bytes] = []
     parser = ResponseParser()
     while not parser.is_message_complete():
-        response = ls_response_4.pop(0)
+        response = ls_response_1.pop(0)
         parser.execute(response, eof_mark)
         # print(f'{parser.is_partial_body()=}')
         # print(parser.recv_body())
